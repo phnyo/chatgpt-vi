@@ -8,20 +8,20 @@ function! ChatGPT()
   let bufnum = bufnr(".chatgpt")
   if !bufexists(bufnum)
     let bufnum = bufadd(".chatgpt")
+  else
+    " delete everything
+    call deletebufline(bufnum, 1, '$')
   endif
 
   call setbufvar(bufnum, "&buftype", "nofile")
-  " delete everything
-  call deletebufline(bufnum, 1, '$')
-  " set answer here
-  call setbufline(bufnum, 1, split(AskGPT(), '\n'))
   
   if bufwinnr(bufnum) == -1
     vsplit
-    let l:winnum = win_getid()
-    call setwinvar(winnum, "&winwidth", 20)
     execute 'buffer' bufnum
   endif
+
+  " set answer here
+  call setbufline(bufnum, 1, split(AskGPT(), '\n'))
 
 endfunction
 

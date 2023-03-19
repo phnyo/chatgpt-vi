@@ -22,11 +22,13 @@ function! s:procGPT(job_id, data, event)
   endif
 
   if a:event == 'stdout'
+    echo '.'
     call add(s:message_list, a:data)
   else
     let l:res = json_decode(s:message_list[0])
     let l:message = res["choices"][0]["message"]["content"]
     call setbufline(bufnum, 1, split(l:message, '\n'))
+    echo 'answered!'
   endif
 
 endfunction
@@ -55,14 +57,13 @@ function! AskGPT()
           \ '-H "Content-Type: application/json" ' .
           \ '-H ' . auth_text . ' ' . 
           \ '-d ' . shellescape(content) 
+    echo ' asking chatGPT...'
     let l:job = jobstart(curl_text, { 
           \ 'on_stdout': function("s:procGPT"),
           \ 'on_exit': function("s:procGPT")})
-  else 
-    echo "no curl installed!"
   endif
 endfunction
 
 command! AskGPT call AskGPT()
 
-nnoremap ask :AskGPT<cr>
+nnoremap ask AskGPT

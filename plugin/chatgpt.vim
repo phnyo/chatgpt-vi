@@ -9,13 +9,12 @@ function! s:procGPT(job_id, data, event)
   let bufnum = bufnr(".chatgpt")
   if !bufexists(bufnum)
     let bufnum = bufadd(".chatgpt")
-  else
-    " delete everything
-    call deletebufline(bufnum, 1, '$')
   endif
 
+  " delete everything
+  call deletebufline(bufnum, 1, '$')
+
   call setbufvar(bufnum, "&buftype", "nofile")
-  
   if bufwinnr(bufnum) == -1
     vsplit
     execute 'buffer' bufnum
@@ -29,6 +28,7 @@ function! s:procGPT(job_id, data, event)
     let l:message = res["choices"][0]["message"]["content"]
     call setbufline(bufnum, 1, split(l:message, '\n'))
     echo 'answered!'
+    let s:message_list = []
   endif
 
 endfunction
@@ -40,7 +40,7 @@ function! s:createJSON()
           \ "model": "gpt-3.5-turbo-0301", 
           \ "messages": [{"role": "user", "content": " 
           \ you are an experienced and charismatic programmer working at google willing to help junior programmer.
-          \ answer below question in detail about the technology in use so that the junior programmer 
+          \ answer below question in detail with examples so that the junior programmer 
           \ can easy understand and start their own job.
           \ ' . message . '" }]
           \ }'
